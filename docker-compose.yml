@@ -1,42 +1,53 @@
 version: "3.8"
 services:
-  mongodb:
-    image: mongo
-    container_name: mongodb
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: ${DB_ROOT_USERNAME}
-      MONGO_INITDB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
-    volumes:
-      - ./mongodb-data:/data/db
-    networks:
-      - mongodb_network
-    ports:
-      - 27017:27017
-    restart: unless-stopped
+    mongodb:
+        image: mongo
+        container_name: mongodb
+        environment:
+            MONGO_INITDB_ROOT_USERNAME: ${DB_ROOT_USERNAME}
+            MONGO_INITDB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+        volumes:
+            - ./mongodb-data:/data/db
+        networks:
+            - mongodb_network
+        ports:
+            - ${MONGODB_PORT}:27017
+        restart: unless-stopped
 
-  mongo-express:
-    image: mongo-express
-    container_name: mongo-express
-    environment:
-      ME_CONFIG_MONGODB_SERVER: mongodb
-      ME_CONFIG_MONGODB_ENABLE_ADMIN: true
-      ME_CONFIG_MONGODB_ADMINUSERNAME: ${MONGODB_ADMINUSERNAME}
-      ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGODB_ADMINPASSWORD}
-      ME_CONFIG_BASICAUTH_USERNAME: ${BASICAUTH_USERNAME}
-      ME_CONFIG_BASICAUTH_PASSWORD: ${BASICAUTH_PASSWORD}
-    links: 
-        - mongodb:mongodb
-    depends_on:
-      - mongodb
-    networks:
-      - mongodb_network
-    ports:
-      - 8081:8081
-    restart: unless-stopped
+    mongo-express:
+        image: mongo-express
+        container_name: mongo-express
+        environment:
+            ME_CONFIG_MONGODB_SERVER: mongodb
+            ME_CONFIG_MONGODB_ENABLE_ADMIN: true
+            ME_CONFIG_MONGODB_ADMINUSERNAME: ${MONGODB_ADMINUSERNAME}
+            ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGODB_ADMINPASSWORD}
+            ME_CONFIG_BASICAUTH_USERNAME: ${BASICAUTH_USERNAME}
+            ME_CONFIG_BASICAUTH_PASSWORD: ${BASICAUTH_PASSWORD}
+        depends_on:
+            - mongodb
+        networks:
+            - mongodb_network
+        ports:
+            - ${MONGO_EXPRESS_PORT}:8081
+        restart: unless-stopped
+
+    backend:
+        container_name: backend
+        build:
+            context: ./backend
+            dockerfile: ./Dockerfile
+        tty: true
+        depends_on:
+            - mongodb
+        networks:
+            - mongodb_network
+        ports:
+            - ${BACK_PORT}:3000
 
 volumes:
-  mongodb-data:
+    mongodb-data:
 
 networks:
-  mongodb_network:
-    driver: bridge
+    mongodb_network:
+        driver: bridge

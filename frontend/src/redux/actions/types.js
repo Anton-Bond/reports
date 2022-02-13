@@ -1,0 +1,7 @@
+// User management
+export const RECEIVE_CURRENT_USER = 'RECEIVE_CURRENT_USER';
+export const CLEAR_CURRENT_USER = 'CLEAR_CURRENT_USER';
+// fetch users
+export const FETCH_USERS_START = 'FETCH_USERS_START';
+export const FETCH_USERS_SUCCESS = 'FETCH_USERS_SUCCESS';
+export const FETCH_USERS_FAIL = 'FETCH_USERS_FAIL';
